@@ -296,9 +296,18 @@
     <div class="brand" style="margin-bottom:0">
       <div class="fox-logo"></div>
     </div>
-    <div class="result-title">你的测试结果为</div>
+    <div class="result-title" id="result-title-main">你的测试结果为</div>
+    <div id="report-bazi-wrap" style="display:none;">
+      <div class="bazi-sub" id="rpt-note" style="text-align:center;margin:-10px 0 14px;"></div>
+      <div class="pillars" id="rpt-pillars"></div>
+      <div class="p-shishen-row" id="rpt-shishen"></div>
+      <div class="summary-card" id="rpt-bazi-card"></div>
+      <div class="summary-card" id="rpt-detail"></div>
+      <div class="result-title" style="font-size:24px;margin:26px 0 20px;">你的脉轮能量为</div>
+    </div>
     <div class="result-list" id="result-list"></div>
     <div class="summary-card" id="summary-card"></div>
+    <div class="summary-card" id="rpt-cross" style="display:none;"></div>
     <div class="summary-card" id="rec-card"></div>
     <div class="summary-card">
       <h3>各脉轮代表什么</h3>
@@ -666,6 +675,40 @@ function showResult(){
   const weakest=[...results].sort((a,b)=>a.score-b.score)[0];
   const strongest=[...results].sort((a,b)=>b.score-a.score)[0];
   lastWeakest = weakest; /* 供双轨匹配使用 */
+
+  /* ===== 综合报告：把八字结果整合进脉轮结果页 ===== */
+  const bwrap=document.getElementById('report-bazi-wrap');
+  const crossEl=document.getElementById('rpt-cross');
+  if(lastBazi){
+    bwrap.style.display='block';
+    document.getElementById('result-title-main').textContent='你的专属能量报告';
+    document.getElementById('rpt-note').textContent=document.getElementById('bz-note').textContent;
+    document.getElementById('rpt-pillars').innerHTML=document.getElementById('pillars').innerHTML;
+    document.getElementById('rpt-shishen').innerHTML=document.getElementById('shishen-row').innerHTML;
+    document.getElementById('rpt-bazi-card').innerHTML=
+      '<h3>五行分布</h3><div>'+document.getElementById('wx-bars').innerHTML+'</div>'
+      +'<h3 style="margin-top:14px;">喜用神</h3><div class="xiyong">'+document.getElementById('xiyong-text').innerHTML+'</div>'
+      +'<h3 style="margin-top:14px;">本我原型</h3><div class="xiyong">'+document.getElementById('archetype-text').innerHTML+'</div>';
+    document.getElementById('rpt-detail').innerHTML=document.getElementById('detail-card').innerHTML;
+    /* 双轨综合结论 */
+    const b=lastBazi;
+    crossEl.style.display='block';
+    crossEl.innerHTML=
+      '<h3>双轨综合结论</h3>'
+      +'<div class="rec-line"><b>先天底色（八字）：</b>你是「'+STEM_ARCH[b.dStem][0]+'」，五行'+(b.strong?'偏强':'偏弱')
+      +'，喜用「'+ELEM_NAMES[b.xiElems[0]]+'、'+ELEM_NAMES[b.xiElems[1]]+'」——这是与生俱来的能量基调。</div>'
+      +'<div class="rec-line" style="margin-top:10px;"><b>当下状态（脉轮）：</b>你最弱的「'+weakest.name+'」（'+weakest.status.text
+      +'）是现阶段最需要关照的能量中心；「'+strongest.name+'」（'+strongest.status.text+'）是你的优势所在。</div>'
+      +'<div class="rec-line" style="margin-top:10px;"><b>综合来看：</b>'
+      +(b.strong
+        ?'先天底子偏强、后劲足，当前「'+weakest.name+'」偏弱更可能近期消耗所致，按脉轮指引调整节奏即可回暖。'
+        :'先天能量偏柔，加上「'+weakest.name+'」偏弱，近期容易感觉撑不住——先补觉、补边界，再谈成长。')
+      +'日常多亲近喜用色与对应状态的调整方向，先天气场与当下能量会慢慢对齐。</div>';
+  }else{
+    bwrap.style.display='none';
+    crossEl.style.display='none';
+    document.getElementById('result-title-main').textContent='你的测试结果为';
+  }
 
   /* ===== 幸运颜色指引（已按需求移除水晶推荐） ===== */
   const recEl=document.getElementById('rec-card');
