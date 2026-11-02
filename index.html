@@ -548,10 +548,11 @@ function getStatus(score){
   if(score>=8)  return {text:'偏弱',     color:'#cf8a2a'};
   return          {text:'不活跃',   color:'#b05555'};
 }
-/* 百分比：得分≥10 显示正向得分率；<10 显示负分堵塞感 */
+/* 百分比展示校准：大众作答中枢约 13.5/20（自评问卷普遍趋中），
+   以 50% 为基准放大分差 —— 每差 1 分展示差 10%，让结果拉开视觉区分度 */
 function getPercent(score){
-  if(score>=10) return Math.round(score/20*100);
-  return Math.round((score-10)/20*100);
+  const calibrated=Math.round(50+(score-13.5)*10);
+  return Math.max(-99,Math.min(99,calibrated));
 }
 
 /* ================= 简单曼陀罗图标 ================= */
