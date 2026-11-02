@@ -166,6 +166,10 @@
   }
   .summary-card h3 { font-size:15px; color:#5a3d8a; letter-spacing:2px; margin-bottom:8px; }
   .summary-card b { color:#5a3d8a; }
+  .chakra-note { display:flex; align-items:flex-start; gap:10px; padding:8px 0; font-size:13px; color:#6a5a52; line-height:1.8; border-bottom:1px dashed rgba(150,120,180,.18); }
+  .chakra-note:last-of-type { border-bottom:none; }
+  .chakra-note .n-dot { flex-shrink:0; width:12px; height:12px; border-radius:50%; margin-top:7px; }
+  .chakra-note b { color:#332b28; }
 
   .save-hint {
     margin-top:26px; text-align:right; font-size:15px; color:#8a7a6e; letter-spacing:3px;
@@ -296,6 +300,17 @@
     <div class="result-list" id="result-list"></div>
     <div class="summary-card" id="summary-card"></div>
     <div class="summary-card" id="rec-card"></div>
+    <div class="summary-card">
+      <h3>各脉轮代表什么</h3>
+      <div class="chakra-note"><span class="n-dot" style="background:#d84a38"></span><div><b>海底轮</b>（红）— 安全感：钱、住处、生存焦虑。低了说明你最近对"稳不稳"很没有底</div></div>
+      <div class="chakra-note"><span class="n-dot" style="background:#e88a20"></span><div><b>脐轮</b>（橙）— 情绪与享受：会不会放松、有没有创造力、亲密关系。低了说明你活得太紧、不太允许自己快乐</div></div>
+      <div class="chakra-note"><span class="n-dot" style="background:#e8c020"></span><div><b>太阳轮</b>（黄）— 自信与掌控：自我价值、边界感、执行力。低了是典型的"容易妥协、不敢主导"</div></div>
+      <div class="chakra-note"><span class="n-dot" style="background:#3a9d5c"></span><div><b>心轮</b>（绿）— 爱与连接：对自己和对人的态度。低了要么过度共情扛别人的情绪，要么关起心门</div></div>
+      <div class="chakra-note"><span class="n-dot" style="background:#2e9ad0"></span><div><b>喉轮</b>（蓝）— 表达：敢不敢说真话、有没有出口。低了就是"话憋着说不出来"</div></div>
+      <div class="chakra-note"><span class="n-dot" style="background:#3a4a9e"></span><div><b>眉心轮</b>（靛）— 直觉与判断：信不信自己的第六感、做决定依不依赖自己。低了是凡事问别人、不敢信自己</div></div>
+      <div class="chakra-note"><span class="n-dot" style="background:#8a5aa8"></span><div><b>顶轮</b>（紫）— 意义感：能不能放下、有没有归属、会不会"想太多停不下来"。低了说明执念重、脑子闲不下来</div></div>
+      <div style="font-size:11px;color:#b8aca4;margin-top:8px;">状态怎么看：已开启=这块过得顺 · 偏弱=最近在消耗你 · 不活跃=长期堵着 · 过分活跃=能量过头（如想太多、控制欲）</div>
+    </div>
     <button class="restart-btn" onclick="restart()">再测一次</button>
     <div class="save-hint">请截图保存</div>
     <div class="footer-note">不传播迷信 · 相信科学 · 仅供自我觉察参考</div>
