@@ -541,11 +541,11 @@ const CHAKRAS = [
 /* 结果页展示顺序：顶轮在上，海底轮在下（参考海报） */
 const RESULT_ORDER = [6,5,4,3,2,1,0];
 
-/* ================= 状态判定 ================= */
+/* ================= 状态判定（阈值收紧：避免大众作答集中在"已开启"一档，拉开结果区分度） ================= */
 function getStatus(score){
   if(score>=16) return {text:'过分活跃', color:'#d64a3a'};
-  if(score>=11) return {text:'已开启',   color:'#3a9d6e'};
-  if(score>=6)  return {text:'偏弱',     color:'#cf8a2a'};
+  if(score>=14) return {text:'已开启',   color:'#3a9d6e'};
+  if(score>=8)  return {text:'偏弱',     color:'#cf8a2a'};
   return          {text:'不活跃',   color:'#b05555'};
 }
 /* 百分比：得分≥10 显示正向得分率；<10 显示负分堵塞感 */
@@ -576,6 +576,14 @@ function chakraIconSVG(color){
 /* ================= 流程控制 ================= */
 let current = 0;
 let answers = new Array(35).fill(null);
+/* 出题乱序映射：显示序号 → 题目真实索引（防止按脉轮分块作答产生的趋中效应） */
+let qOrder = Array.from({length:35},(_,i)=>i);
+function shuffleQuestions(){
+  for(let i=qOrder.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    const t=qOrder[i]; qOrder[i]=qOrder[j]; qOrder[j]=t;
+  }
+}
 
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -583,24 +591,21 @@ function showPage(id){
   window.scrollTo(0,0);
 }
 
-function startQuiz(){ current=0; renderQuestion(); showPage('page-quiz'); }
+function startQuiz(){ shuffleQuestions(); current=0; renderQuestion(); showPage('page-quiz'); }
 
 function renderQuestion(){
-  let qi=current, ci=0, acc=0;
-  for(let i=0;i<CHAKRAS.length;i++){
-    if(qi < acc+5){ ci=i; break; }
-    acc+=5;
-  }
+  const qi=qOrder[current];
+  const ci=Math.floor(qi/5), qIdx=qi%5;
   const chakra=CHAKRAS[ci];
-  const q=chakra.questions[qi-acc];
+  const q=chakra.questions[qIdx];
 
-  document.getElementById('q-num').textContent=qi+1;
-  document.getElementById('progress-fill').style.width=(qi/35*100)+'%';
+  document.getElementById('q-num').textContent=current+1;
+  document.getElementById('progress-fill').style.width=(current/35*100)+'%';
   const tag=document.getElementById('q-chakra');
   tag.textContent=chakra.name+' · '+chakra.desc;
   tag.style.background=chakra.color;
-  document.getElementById('q-text').textContent=(qi+1)+'. '+q.t;
-  document.getElementById('btn-back').style.visibility=qi>0?'visible':'hidden';
+  document.getElementById('q-text').textContent=(current+1)+'. '+q.t;
+  document.getElementById('btn-back').style.visibility=current>0?'visible':'hidden';
 
   const box=document.getElementById('q-options');
   box.innerHTML='';
@@ -620,7 +625,7 @@ let advancing = false; // 防抖锁：选项点击后 280ms 内忽略再次点�
 function selectOption(idx, el){
   if(advancing) return;
   advancing = true;
-  answers[current]=idx;
+  answers[qOrder[current]]=idx;
   document.querySelectorAll('#q-options .option').forEach(o=>o.classList.remove('selected'));
   el.classList.add('selected');
   setTimeout(()=>{
@@ -637,9 +642,9 @@ function prevQuestion(){
 /* ================= 结果计算 ================= */
 function showResult(){
   /* 兜底校验：如有未作答的题，跳回第一道空题，杜绝 NaN */
-  const firstEmpty = answers.findIndex(a=>a===null);
-  if(firstEmpty !== -1){
-    current = firstEmpty;
+  const firstEmptyReal = answers.findIndex(a=>a===null);
+  if(firstEmptyReal !== -1){
+    current = qOrder.indexOf(firstEmptyReal); /* 乱序映射：真实题号 → 显示序号 */
     renderQuestion();
     showPage('page-quiz');
     return;
